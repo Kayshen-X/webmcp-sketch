@@ -114,6 +114,6 @@ const script = [
   ["update_shape", { id: "s2", stroke: "#b8901a", strokeWidth: 3 }],
   ["list_shapes", {}],
 ];
-async function runScript() { for (const [n, a] of script) { await call(n, a, "mock agent"); await new Promise((r) => setTimeout(r, 120)); } }
+async function runScript() { for (const [n, a] of script) { await call(n, a, "mock agent"); await new Promise((r) => setTimeout(r, +(new URLSearchParams(location.search).get('step') || 120))); } }
 document.getElementById("demo").onclick = runScript;
-if (new URLSearchParams(location.search).has("autoplay")) runScript();
+if (new URLSearchParams(location.search).has("autoplay")) setTimeout(runScript, +(new URLSearchParams(location.search).get("delay") || 0));
