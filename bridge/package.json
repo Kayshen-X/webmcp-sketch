@@ -1,0 +1,14 @@
+{
+  "name": "webmcp-bridge",
+  "version": "0.1.0",
+  "description": "Expose a page's WebMCP tools (document.modelContext) as a native stdio MCP server",
+  "type": "module",
+  "bin": { "webmcp-bridge": "index.js" },
+  "main": "index.js",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.0",
+    "playwright-core": "^1.50.0"
+  }
+}
