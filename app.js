@@ -114,6 +114,12 @@ const script = [
   ["update_shape", { id: "s2", stroke: "#b8901a", strokeWidth: 3 }],
   ["list_shapes", {}],
 ];
-async function runScript() { for (const [n, a] of script) { await call(n, a, "mock agent"); await new Promise((r) => setTimeout(r, +(new URLSearchParams(location.search).get('step') || 120))); } }
+async function viaAgent(n, a) {
+  // Real WebMCP path: discover tools like an agent would, then invoke through the browser.
+  const t = (await mc.getTools()).find((x) => x.name === n);
+  return mc.executeTool(t, a);
+}
+const useWebMCP = () => mc && typeof mc.executeTool === "function" && !new URLSearchParams(location.search).has("mock");
+async function runScript() { for (const [n, a] of script) { if (useWebMCP()) await viaAgent(n, a); else await call(n, a, "mock agent"); await new Promise((r) => setTimeout(r, +(new URLSearchParams(location.search).get('step') || 120))); } }
 document.getElementById("demo").onclick = runScript;
 if (new URLSearchParams(location.search).has("autoplay")) setTimeout(runScript, +(new URLSearchParams(location.search).get("delay") || 0));
