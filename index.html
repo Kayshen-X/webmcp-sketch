@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WebMCP × sketch canvas</title>
+<!-- Origin trial: paste your token for your origin here -->
+<!-- <meta http-equiv="origin-trial" content="YOUR_WEBMCP_OT_TOKEN"> -->
+<style>
+:root{--ink:#2b2b2e;--graphite:#3a3b3f;--lead:#6b6d73;--paper:#f3f1ea;--line:#d8d4c8;--accent:#c9a227}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;background:var(--graphite);color:#e9e7e1;height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid #4a4b50}
+header h1{font-size:17px;margin:0;letter-spacing:.5px}
+header h1 b{color:var(--accent)}
+.pill{font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid #5a5c62;color:#bdbbb4}
+.pill.on{border-color:#7fae7a;color:#a9d6a3}
+#banner{display:none;background:#4a4235;color:#f0dfb4;padding:8px 22px;font-size:12.5px;border-bottom:1px solid #5d523e}
+main{flex:1;display:grid;grid-template-columns:1fr 380px;min-height:0}
+#stage{padding:22px;min-height:0}
+svg#cv{width:100%;height:100%;background:var(--paper);border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 0 0 1px var(--line);
+ background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:40px 40px}
+aside{border-left:1px solid #4a4b50;display:flex;flex-direction:column;min-height:0;background:#333438}
+aside h2{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--lead);margin:16px 18px 8px}
+#agent{padding:0 18px;display:flex;flex-direction:column;gap:6px}
+#agent select,#agent textarea,#agent button,form input,form select,form button{font:inherit;font-size:12.5px;background:#2a2b2e;color:#e9e7e1;border:1px solid #55575d;border-radius:4px;padding:6px 8px}
+#agent textarea{height:62px;resize:vertical}
+button{cursor:pointer}button:hover{border-color:var(--accent)!important}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+form#addForm{padding:0 18px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+form#addForm button{grid-column:span 2}
+form#addForm input,form#addForm select{min-width:0;width:100%}
+.e pre,.e .t{word-break:break-all}
+aside{min-width:0;overflow:hidden}form#addForm input,form#addForm select{min-width:0;width:100%}.e pre,.e .t{word-break:break-all}
+#log{flex:1;overflow:auto;margin:0 18px 18px;padding:10px;background:#28292c;border-radius:4px;font-size:12px;border:1px solid #45464b}
+.e{margin-bottom:8px;border-left:2px solid var(--lead);padding-left:8px}
+.e .t{color:var(--accent)}.e .src{color:var(--lead);font-size:10.5px}.e pre{margin:2px 0 0;white-space:pre-wrap;color:#bdbbb4}
+</style>
+</head>
+<body>
+<header>
+  <h1>WebMCP <b>×</b> sketch canvas</h1>
+  <span id="status" class="pill">detecting…</span>
+  <span class="pill">tools: add_shape · list_shapes · update_shape · clear_canvas · add_shape_form</span>
+</header>
+<div id="banner">WebMCP not detected (<code>document.modelContext</code> missing). Using the built-in mock agent — it calls the exact same tool handlers. Enable <code>chrome://flags/#enable-webmcp-testing</code> (Chrome 149+) to expose them to a real agent.</div>
+<main>
+  <div id="stage"><svg id="cv" viewBox="0 0 800 560" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="pencil"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.6"/></filter></defs>
+    <g id="shapes" filter="url(#pencil)"></g></svg></div>
+  <aside>
+    <h2>Mock agent <span id="mockNote"></span></h2>
+    <div id="agent">
+      <select id="tool"></select>
+      <textarea id="args" spellcheck="false"></textarea>
+      <div class="row"><button id="run">▶ call tool</button><button id="demo">✎ run sample script</button></div>
+    </div>
+    <h2>Declarative tool (HTML form)</h2>
+    <form id="addForm" toolname="add_shape_form" tooldescription="Add one shape to the sketch canvas using a simple form.">
+      <select name="type" toolparamdescription="Shape type: rect, ellipse, line or text"><option>rect</option><option>ellipse</option><option>line</option><option>text</option></select>
+      <input name="text" placeholder="text (for text)" toolparamdescription="Label text, only used when type is text">
+      <input name="x" type="number" value="120" toolparamdescription="X position in canvas units (0-800)">
+      <input name="y" type="number" value="120" toolparamdescription="Y position in canvas units (0-560)">
+      <button type="submit">+ add via form</button>
+    </form>
+    <h2>Tool-call log</h2>
+    <div id="log"></div>
+  </aside>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
