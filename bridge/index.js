@@ -116,7 +116,11 @@ server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
     catch (e) { return { error: String(e?.message ?? e) }; }
   }, { name, args });
   if (r.error) return { isError: true, content: [{ type: "text", text: r.error }] };
-  return { content: [{ type: "text", text: typeof r.ok === "string" ? r.ok : JSON.stringify(r.ok) }] };
+  // executeTool resolves to a JSON string; if it is already an MCP-style {content:[...]} result, pass it through.
+  let v = r.ok;
+  if (typeof v === "string") { try { v = JSON.parse(v); } catch {} }
+  if (v && Array.isArray(v.content)) return { content: v.content, isError: !!v.isError };
+  return { content: [{ type: "text", text: typeof v === "string" ? v : JSON.stringify(v) }] };
 });
 
 await connect();
